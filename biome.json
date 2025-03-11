@@ -1,6 +1,9 @@
 {
 	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
 	"javascript": {
+		"parser": {
+			"unsafeParameterDecoratorsEnabled": true
+		},
 		"formatter": {
 			"quoteStyle": "single",
 			"quoteProperties": "asNeeded",
@@ -46,7 +49,7 @@
 				"noUndeclaredDependencies": "off",
 				"useArrayLiterals": "error",
 				"noFlatMapIdentity": "error",
-				"noUnusedFunctionParameters": "warn",
+				"noUnusedFunctionParameters": "off",
 				"noInvalidBuiltinInstantiation": "error",
 				"noInvalidDirectionInLinearGradient": "error",
 				"noInvalidPositionAtImportRule": "error",
