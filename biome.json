@@ -19,7 +19,13 @@
 		"lineEnding": "crlf",
 		"indentWidth": 2,
 		"lineWidth": 100,
-		"ignore": ["node_modules/**", "dist/**", "tsconfig.json", "jsconfig.json", ".next/**"]
+		"ignore": [
+			"node_modules/**",
+			"dist/**",
+			"tsconfig.json",
+			"jsconfig.json",
+			".next/**"
+		]
 	},
 	"linter": {
 		"enabled": true,
@@ -60,7 +66,7 @@
 				"useConst": "off",
 				"noNonNullAssertion": "off",
 				"useExplicitLengthCheck": "off",
-				"noParameterProperties": "warn",
+				"noParameterProperties": "off",
 				"noRestrictedGlobals": "warn",
 				"noShoutyConstants": "warn",
 				"useFragmentSyntax": "warn",
@@ -69,6 +75,7 @@
 				"useThrowNewError": "error",
 				"useThrowOnlyError": "error",
 				"noYodaExpression": "error",
+				"useImportType": "off",
 				"useConsistentBuiltinInstantiation": "error"
 			},
 			"suspicious": {
@@ -101,6 +108,11 @@
 				"useComponentExportOnlyModules": "off"
 			}
 		},
-		"ignore": ["node_modules/**", "dist/**", "tsconfig.json", "jsconfig.json"]
+		"ignore": [
+			"node_modules/**",
+			"dist/**",
+			"tsconfig.json",
+			"jsconfig.json"
+		]
 	}
 }
