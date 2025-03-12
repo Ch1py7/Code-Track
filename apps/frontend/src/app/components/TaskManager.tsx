@@ -9,29 +9,16 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import type { Priority, Task } from '@/lib/types'
+import axios from 'axios'
 import { ArrowUpDown, Filter, PlusCircle } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import TaskCard from './TaskCard'
 import TaskModal from './TaskModal'
 
+const URL = 'https://code-track.onrender.com/task'
+
 export default function TaskManager() {
 	const [tasks, setTasks] = useState<Task[]>([])
-	const [isMounted, setIsMounted] = useState(false)
-
-	useEffect(() => {
-		setIsMounted(true)
-		const savedTasks = localStorage.getItem('tasks')
-		if (savedTasks) {
-			setTasks(JSON.parse(savedTasks))
-		}
-	}, [])
-
-	useEffect(() => {
-		if (isMounted) {
-			localStorage.setItem('tasks', JSON.stringify(tasks))
-		}
-	}, [tasks, isMounted])
-
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [editingTask, setEditingTask] = useState<Task | null>(null)
 	const [searchQuery, setSearchQuery] = useState('')
@@ -40,18 +27,31 @@ export default function TaskManager() {
 	const [sortBy, setSortBy] = useState<'priority' | 'deadline' | 'created'>('created')
 	const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
 
-	useEffect(() => {
-		localStorage.setItem('tasks', JSON.stringify(tasks))
-	}, [tasks])
+	const getTasks = useCallback(async () => {
+		const { data, status } = await axios.get<Task[]>(URL)
+		if (status === 200) {
+			setTasks(data)
+		}
+	}, [])
 
-	const handleAddTask = (task: Task) => {
+	useEffect(() => {
+		getTasks()
+	}, [getTasks])
+
+	const handleAddTask = async (task: Task) => {
 		if (editingTask) {
-			setTasks(tasks.map((t) => (t.id === task.id ? task : t)))
+			const { status } = await axios.patch(`${URL}/${task.id}`, { ...task })
+			if (status === 200) {
+				setTasks(tasks.map((t) => (t.id === task.id ? task : t)))
+			}
 		} else {
-			setTasks([
-				...tasks,
-				{ ...task, id: crypto.randomUUID(), createdAt: new Date().toISOString() },
-			])
+			const { status } = await axios.post(URL, { ...task })
+			if (status === 201) {
+				setTasks([
+					...tasks,
+					{ ...task, id: crypto.randomUUID(), createdAt: new Date().toISOString() },
+				])
+			}
 		}
 		setIsModalOpen(false)
 		setEditingTask(null)
@@ -62,11 +62,15 @@ export default function TaskManager() {
 		setIsModalOpen(true)
 	}
 
-	const handleDeleteTask = (id: string) => {
-		setTasks(tasks.filter((task) => task.id !== id))
+	const handleDeleteTask = async (id: string) => {
+		const { status } = await axios.delete(`${URL}/${id}`)
+		if (status) {
+			getTasks()
+		}
 	}
 
-	const handleToggleComplete = (id: string) => {
+	const handleToggleComplete = async (id: string, state: boolean) => {
+		await axios.patch(`${URL}/${id}`, { completed: !state })
 		setTasks(tasks.map((task) => (task.id === id ? { ...task, completed: !task.completed } : task)))
 	}
 
@@ -98,8 +102,6 @@ export default function TaskManager() {
 		const dateB = new Date(b.createdAt).getTime()
 		return sortDirection === 'asc' ? dateA - dateB : dateB - dateA
 	})
-
-	if (!isMounted) return null
 
 	return (
 		<div className='space-y-6'>

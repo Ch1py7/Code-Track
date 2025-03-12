@@ -22,7 +22,7 @@ interface TaskCardProps {
 	task: Task
 	onEdit: (task: Task) => void
 	onDelete: (id: string) => void
-	onToggleComplete: (id: string) => void
+	onToggleComplete: (id: string, state: boolean) => void
 }
 
 const priorityColors = {
@@ -46,7 +46,7 @@ export default function TaskCard({ task, onEdit, onDelete, onToggleComplete }: T
 								variant='ghost'
 								size='icon'
 								className='h-6 w-6'
-								onClick={() => onToggleComplete(task.id)}
+								onClick={() => onToggleComplete(task.id, task.completed)}
 							>
 								{task.completed ? (
 									<CheckCircle className='h-5 w-5 text-primary' />
